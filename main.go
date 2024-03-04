@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github-com/jairogloz/auth0-back/middleware"
+	"github-com/jairogloz/auth0-back/pkg/auth0"
 	"log"
 	"net/http"
 
@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// this is kept only for reference, but "main" main is in cmd/http/main.go
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading the .env file: %v", err)
@@ -25,7 +26,7 @@ func main() {
 	}))
 
 	// This route is only accessible if the user has a valid access_token.
-	router.Handle("/api/private", middleware.EnsureValidToken()(
+	router.Handle("/api/private", auth0.EnsureValidToken()(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
@@ -35,13 +36,13 @@ func main() {
 
 	// This route is only accessible if the user has a
 	// valid access_token with the read:messages scope.
-	router.Handle("/api/private-scoped", middleware.EnsureValidToken()(
+	router.Handle("/api/private-scoped", auth0.EnsureValidToken()(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 
 			token := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
 
-			claims := token.CustomClaims.(*middleware.CustomClaims)
+			claims := token.CustomClaims.(*auth0.CustomClaims)
 			if !claims.HasScope("read:messages") {
 				w.WriteHeader(http.StatusForbidden)
 				w.Write([]byte(`{"message":"Insufficient scope."}`))
