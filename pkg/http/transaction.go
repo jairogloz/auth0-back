@@ -8,7 +8,7 @@ import (
 )
 
 // GetTransactions returns the transactions
-func GetTransactions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (s *Server) GetTransactions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	txs := []domain.Transaction{
 		{ID: "a"},
 		{ID: "b"},

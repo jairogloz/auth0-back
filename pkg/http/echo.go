@@ -7,7 +7,7 @@ import (
 )
 
 // Public is an http handler that echoes the request body.
-func Public(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (s *Server) Public(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var requestBody map[string]interface{}
 
 	// Decode the JSON body
