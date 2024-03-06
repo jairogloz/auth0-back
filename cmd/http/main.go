@@ -46,6 +46,7 @@ func main() {
 	router.POST("/v1/public", server.Public)
 	router.GET("/v1/transactions", auth0.EnsureValidTokenMiddleware(auth0.AuthroizeMddlw(server.GetTransactions)))
 	router.POST("/v1/organizations", auth0.EnsureValidTokenMiddleware(auth0.AuthroizeMddlw(server.CreateOrganization)))
+	router.POST("/v1/organization-roles", auth0.EnsureValidTokenMiddleware(auth0.AuthroizeMddlw(server.CreateOrganizationRole)))
 
 	fmt.Println("Server is running on http://localhost:8080")
 	http.ListenAndServe(":8080", router)

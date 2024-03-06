@@ -2,6 +2,7 @@ package auth0
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -113,8 +114,16 @@ func AuthroizeMddlw(next httprouter.Handle) httprouter.Handle {
 
 		claims := token.CustomClaims.(*CustomClaims)
 		if !claims.HasScope(reqPermissions) {
+			errResp := map[string]string{
+				"message": fmt.Sprintf("Insufficient scope. Required: %s", reqPermissions),
+			}
+			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte(`{"message":"Insufficient scope."}`))
+			err := json.NewEncoder(w).Encode(errResp)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+
 			return
 		}
 
